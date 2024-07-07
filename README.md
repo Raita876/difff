@@ -2,6 +2,14 @@
 
 This CLI compares files located in two directories and outputs the differences.
 
+## Install
+
+### go install
+
+```
+$ go install github.com/Raita876/difff/cmd/difff@latest
+```
+
 ## Usage
 
 ```
