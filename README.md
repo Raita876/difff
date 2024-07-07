@@ -10,6 +10,15 @@ This CLI compares files located in two directories and outputs the differences.
 $ go install github.com/Raita876/difff/cmd/difff@latest
 ```
 
+### bin install
+
+```
+$ curl -L https://github.com/Raita876/difff/releases/download/0.3.0/difff_Linux_x86_64.tar.gz -o ./difff_Linux_x86_64.tar.gz
+$ tar -xzf difff_Linux_x86_64.tar.gz
+$ chmod 755 ./difff
+$ mv ./difff /usr/local/bin/
+```
+
 ## Usage
 
 ```
