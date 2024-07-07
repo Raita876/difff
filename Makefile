@@ -30,6 +30,10 @@ cover: test
 	go tool cover -html=index.out -o index.html
 	python3 -m http.server 8765
 
+.PHONY: e2e
+e2e:
+	./e2e/test.sh
+
 .PHONY: golangci
 golangci:
 	golangci-lint run -v ./...
