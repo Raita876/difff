@@ -2,17 +2,17 @@
 set -euo pipefail
 
 THIS_SCRIPT_DIR=$(
-    cd "$(dirname "$0")"
-    pwd
+  cd "$(dirname "$0")"
+  pwd
 )
 readonly THIS_SCRIPT_DIR
 
-readonly BIN_PATH="${THIS_SCRIPT_DIR}/../bin/${GOOS}/${GOARCH}/difff"
+readonly BIN_PATH="${THIS_SCRIPT_DIR}/../${CLI_BIN}"
 readonly SOURCE_DIR_PATH="${THIS_SCRIPT_DIR}/data/source"
 readonly TARGET_DIR_PATH="${THIS_SCRIPT_DIR}/data/target"
 
 WANT=$(
-    cat <<EOS
+  cat <<EOS
 {
   "source": "${SOURCE_DIR_PATH}",
   "target": "${TARGET_DIR_PATH}",
@@ -44,16 +44,16 @@ EOS
 readonly WANT
 
 function main() {
-    local result
-    result=$(
-        ${BIN_PATH} \
-            "${SOURCE_DIR_PATH}" \
-            "${TARGET_DIR_PATH}"
-    )
+  local result
+  result=$(
+    ${BIN_PATH} \
+      "${SOURCE_DIR_PATH}" \
+      "${TARGET_DIR_PATH}"
+  )
 
-    diff -u \
-        <(echo "${result}") \
-        <(echo "${WANT}")
+  diff -u \
+    <(echo "${result}") \
+    <(echo "${WANT}")
 
 }
 

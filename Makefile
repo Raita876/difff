@@ -1,25 +1,24 @@
-VERSION := $(shell cat ./VERSION)
-CLI_NAME := difff
+export VERSION ?= $(shell cat ./VERSION)
+export CLI_BIN ?= dist/difff_linux_amd64_v1/difff
 
-export GOOS ?= linux
-export GOARCH ?= amd64
 
 .PHONY: build
 build:
-	go build \
-		-o ./bin/$(GOOS)/$(GOARCH)/$(CLI_NAME) \
-		-ldflags "-X main.version=$(VERSION) -X main.name=$(CLI_NAME)" \
-		./cmd/$(CLI_NAME)
+	goreleaser release --snapshot --clean
+
+.PHONY: release
+release:
+	goreleaser release --clean
 
 .PHONY: run
 run: build
-	./bin/$(GOOS)/$(GOARCH)/$(CLI_NAME) \
+	$(CLI_BIN) \
 		e2e/data/source \
 		e2e/data/target
 
 .PHONY: help
 help: build
-	./bin/$(GOOS)/$(GOARCH)/$(CLI_NAME) --help
+	$(CLI_BIN) --help
 
 .PHONY: test
 test:
@@ -44,3 +43,8 @@ govulncheck:
 
 .PHONY: ci
 ci: test e2e golangci govulncheck
+
+.PHONY: tag
+tag:
+	git tag -f $(VERSION)
+	git push origin $(VERSION)
