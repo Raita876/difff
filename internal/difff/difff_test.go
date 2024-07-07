@@ -139,3 +139,52 @@ func TestRun(t *testing.T) {
 		})
 	}
 }
+
+func Test_countFiles(t *testing.T) {
+	tempDir := t.TempDir()
+	for range 3 {
+		_, err := os.CreateTemp(tempDir, "temp")
+		if err != nil {
+			t.Fatal("failed create temp file.")
+		}
+	}
+
+	type args struct {
+		dir string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    uint64
+		wantErr bool
+	}{
+		{
+			name: "countFiles",
+			args: args{
+				dir: tempDir,
+			},
+			want:    3,
+			wantErr: false,
+		},
+		{
+			name: "countFiles",
+			args: args{
+				dir: "non existent directory",
+			},
+			want:    0,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := countFiles(tt.args.dir)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("countFiles() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("countFiles() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

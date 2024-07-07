@@ -14,8 +14,14 @@ readonly TARGET_DIR_PATH="${THIS_SCRIPT_DIR}/data/target"
 WANT=$(
   cat <<EOS
 {
-  "source": "${SOURCE_DIR_PATH}",
-  "target": "${TARGET_DIR_PATH}",
+  "source": {
+    "path": "${SOURCE_DIR_PATH}",
+    "num": 6
+  },
+  "target": {
+    "path": "${TARGET_DIR_PATH}",
+    "num": 6
+  },
   "diff": {
     "source": [
       {

@@ -33,10 +33,16 @@ $ find ./e2e/data/target -type f
 ./e2e/data/target/a.txt
 ./e2e/data/target/b.txt
 ./e2e/data/target/c/d.txt
-$ ./bin/linux/amd64/difff ./e2e/data/source ./e2e/data/target
+$ difff ./e2e/data/source ./e2e/data/target
 {
-  "source": "./e2e/data/source",
-  "target": "./e2e/data/target",
+  "source": {
+    "path": "e2e/data/source",
+    "num": 6
+  },
+  "target": {
+    "path": "e2e/data/target",
+    "num": 6
+  },
   "diff": {
     "source": [
       {

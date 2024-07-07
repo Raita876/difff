@@ -12,9 +12,14 @@ import (
 )
 
 type DiffInfo struct {
-	Source string `json:"source"`
-	Target string `json:"target"`
-	Diff   Diff   `json:"diff"`
+	Source Dir  `json:"source"`
+	Target Dir  `json:"target"`
+	Diff   Diff `json:"diff"`
+}
+
+type Dir struct {
+	Path string `json:"path"`
+	Num  uint64 `json:"num"`
 }
 
 type Diff struct {
@@ -97,6 +102,24 @@ func getHash(r io.Reader) (string, error) {
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }
 
+func countFiles(dir string) (uint64, error) {
+	var count uint64 = 0
+
+	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !d.IsDir() {
+			count++
+		}
+
+		return nil
+	})
+
+	return count, err
+}
+
 func Run(source, target string) error {
 	ri1, err := getResults(source)
 	if err != nil {
@@ -110,9 +133,25 @@ func Run(source, target string) error {
 
 	diff1, diff2 := lo.Difference(ri1.results, ri2.results)
 
+	count1, err := countFiles(source)
+	if err != nil {
+		return err
+	}
+
+	count2, err := countFiles(target)
+	if err != nil {
+		return err
+	}
+
 	di := DiffInfo{
-		Source: source,
-		Target: target,
+		Source: Dir{
+			Path: source,
+			Num:  count1,
+		},
+		Target: Dir{
+			Path: target,
+			Num:  count2,
+		},
 		Diff: Diff{
 			Source: diff1,
 			Target: diff2,

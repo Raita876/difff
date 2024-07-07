@@ -42,7 +42,7 @@ govulncheck:
 	govulncheck ./...
 
 .PHONY: ci
-ci: test e2e golangci govulncheck
+ci: build test e2e golangci govulncheck
 
 .PHONY: tag
 tag:
