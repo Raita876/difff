@@ -1,5 +1,8 @@
 version: 2
 
+env:
+  - VERSION={{ .Env.VERSION }}
+
 before:
   hooks:
     - go mod tidy
@@ -16,7 +19,7 @@ builds:
       - amd64
       - arm64
     ldflags:
-      - -s -w -X main.version={{.Env.VERSION}} -X main.name=difff
+      - -s -w -X main.version={{ .Env.VERSION }} -X main.name=difff
 
 archives:
   - format: tar.gz

@@ -26,6 +26,6 @@ jobs:
         run: go install github.com/goreleaser/goreleaser/v2@latest
 
       - name: release
-        run: VERSION=$(cat VERSION) make release
+        run: make release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
