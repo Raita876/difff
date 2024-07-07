@@ -37,3 +37,6 @@ golangci:
 .PHONY: govulncheck
 govulncheck:
 	govulncheck ./...
+
+.PHONY: ci
+ci: test golangci govulncheck
