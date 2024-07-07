@@ -23,9 +23,7 @@ jobs:
           cache: true
 
       - name: install
-        uses: goreleaser/goreleaser-action@v4
-        with:
-          version: latest
+        run: go install github.com/goreleaser/goreleaser/v2@latest
 
       - name: release
         run: make release
