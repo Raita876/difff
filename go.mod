@@ -1,6 +1,6 @@
 module github.com/Raita876/difff
 
-go 1.22.2
+go 1.22.5
 
 require (
 	github.com/samber/lo v1.44.0
