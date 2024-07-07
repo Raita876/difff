@@ -43,4 +43,4 @@ govulncheck:
 	govulncheck ./...
 
 .PHONY: ci
-ci: test golangci govulncheck
+ci: test e2e golangci govulncheck
