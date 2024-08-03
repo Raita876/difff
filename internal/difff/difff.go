@@ -11,7 +11,7 @@ import (
 	"github.com/samber/lo"
 )
 
-type DiffInfo struct {
+type DiffResponse struct {
 	Source Dir  `json:"source"`
 	Target Dir  `json:"target"`
 	Diff   Diff `json:"diff"`
@@ -23,8 +23,13 @@ type Dir struct {
 }
 
 type Diff struct {
-	Source Results `json:"source"`
-	Target Results `json:"target"`
+	Source DiffInfo `json:"source"`
+	Target DiffInfo `json:"target"`
+}
+
+type DiffInfo struct {
+	Num     uint64  `json:"num"`
+	Results Results `json:"results"`
 }
 
 type Result struct {
@@ -143,7 +148,7 @@ func Run(source, target string) error {
 		return err
 	}
 
-	di := DiffInfo{
+	di := DiffResponse{
 		Source: Dir{
 			Path: source,
 			Num:  count1,
@@ -153,8 +158,14 @@ func Run(source, target string) error {
 			Num:  count2,
 		},
 		Diff: Diff{
-			Source: diff1,
-			Target: diff2,
+			Source: DiffInfo{
+				Num:     uint64(len(diff1)),
+				Results: diff1,
+			},
+			Target: DiffInfo{
+				Num:     uint64(len(diff2)),
+				Results: diff2,
+			},
 		},
 	}
 

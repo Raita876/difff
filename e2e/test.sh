@@ -23,26 +23,32 @@ WANT=$(
     "num": 6
   },
   "diff": {
-    "source": [
-      {
-        "path": "e/f/g.txt",
-        "hash": "211c102123b4a41bd5227dcc84952349"
-      },
-      {
-        "path": "e/i.txt",
-        "hash": "1b08ef3ea73ce6fd8b2ef57f54073b5a"
-      }
-    ],
-    "target": [
-      {
-        "path": "e/f/g.txt",
-        "hash": "e4727cb9315a4fddec71e1a85cad6c09"
-      },
-      {
-        "path": "e/f/j.txt",
-        "hash": "f6c79025f3b5bedac7cd769f0847e36a"
-      }
-    ]
+    "source": {
+      "num": 2,
+      "results": [
+        {
+          "path": "e/f/g.txt",
+          "hash": "211c102123b4a41bd5227dcc84952349"
+        },
+        {
+          "path": "e/i.txt",
+          "hash": "1b08ef3ea73ce6fd8b2ef57f54073b5a"
+        }
+      ]
+    },
+    "target": {
+      "num": 2,
+      "results": [
+        {
+          "path": "e/f/g.txt",
+          "hash": "e4727cb9315a4fddec71e1a85cad6c09"
+        },
+        {
+          "path": "e/f/j.txt",
+          "hash": "f6c79025f3b5bedac7cd769f0847e36a"
+        }
+      ]
+    }
   }
 }
 EOS
