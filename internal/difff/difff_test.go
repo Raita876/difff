@@ -135,10 +135,29 @@ func TestRun(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Run error",
+			name: "Run error (source is non existent directory)",
 			args: args{
 				source: "non existent directory",
+				target: tempDir2,
+				ft:     JSON,
+			},
+			wantErr: true,
+		},
+		{
+			name: "Run error (target is non existent directory)",
+			args: args{
+				source: tempDir1,
 				target: "non existent directory",
+				ft:     JSON,
+			},
+			wantErr: true,
+		},
+		{
+			name: "Run error (UNKNOWN format)",
+			args: args{
+				source: tempDir1,
+				target: tempDir2,
+				ft:     "UNKNOWN",
 			},
 			wantErr: true,
 		},
@@ -347,6 +366,88 @@ diff:
 			}
 			if got != tt.want {
 				t.Errorf("run() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_marshal(t *testing.T) {
+	type args struct {
+		dr *DiffResponse
+		ft FormatType
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "marshal",
+			args: args{
+				dr: &DiffResponse{
+					Source: Dir{
+						Path: "source_path",
+						Num:  1,
+					},
+					Target: Dir{
+						Path: "target_path",
+						Num:  1,
+					},
+					Diff: Diff{
+						Source: DiffInfo{
+							Num:     0,
+							Results: []Result{},
+						},
+						Target: DiffInfo{
+							Num:     0,
+							Results: []Result{},
+						},
+					},
+				},
+				ft: JSON,
+			},
+			want: []byte(`{
+  "source": {
+    "path": "source_path",
+    "num": 1
+  },
+  "target": {
+    "path": "target_path",
+    "num": 1
+  },
+  "diff": {
+    "source": {
+      "num": 0,
+      "results": []
+    },
+    "target": {
+      "num": 0,
+      "results": []
+    }
+  }
+}`),
+			wantErr: false,
+		},
+		{
+			name: "marshal",
+			args: args{
+				dr: &DiffResponse{},
+				ft: "UNKNONW",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := marshal(tt.args.dr, tt.args.ft)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("marshal() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("marshal() = %v, want %v", string(got), string(tt.want))
 			}
 		})
 	}
