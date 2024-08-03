@@ -44,5 +44,8 @@ jobs:
           tar -C /tmp -xzf /tmp/golangci-lint-${DOWNLOAD_VERSION}-${DOWNLOAD_OS}-${DOWNLOAD_ARCH}.tar.gz
           mv /tmp/golangci-lint-${DOWNLOAD_VERSION}-${DOWNLOAD_OS}-${DOWNLOAD_ARCH}/golangci-lint /usr/local/bin/
 
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
       - name: Run CI
         run: make ci
