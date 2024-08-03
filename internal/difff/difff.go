@@ -54,16 +54,6 @@ const (
 	XML  FormatType = "XML"
 )
 
-// func (ft FormatType) String() string {
-// 	m := map[FormatType]string{
-// 		JSON: "JSON",
-// 		YAML: "YAML",
-// 		XML:  "XML",
-// 	}
-
-// 	return m[ft]
-// }
-
 func getResults(root string) (ResultsInfo, error) {
 	rs := Results{}
 	cd, err := os.Getwd()
