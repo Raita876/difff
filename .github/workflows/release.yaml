@@ -1,0 +1,37 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install goreleaser
+        run: |
+          DOWNLOAD_OS=Linux
+          DOWNLOAD_ARCH=x86_64
+          DOWNLOAD_VERSION=2.1.0
+          curl -L \
+            https://github.com/goreleaser/goreleaser/releases/download/v${DOWNLOAD_VERSION}/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz \
+            -o /tmp/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
+          tar -C /tmp -xzf /tmp/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
+          mv /tmp/goreleaser /usr/local/bin/
+
+      - name: Release
+        run: make release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
