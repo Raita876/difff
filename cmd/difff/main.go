@@ -13,18 +13,10 @@ var (
 	name    string
 )
 
-type Options struct {
-	Verbose bool
-}
+type Options struct{}
 
 type Option interface {
 	apply(*Options)
-}
-
-type verboseOption bool
-
-func (vo verboseOption) apply(o *Options) {
-	o.Verbose = bool(vo)
 }
 
 func (options *Options) Set(opts ...Option) {
@@ -40,10 +32,9 @@ func run(source, target string, o *Options) error {
 func Run(c *cli.Context) error {
 	source := c.Args().Get(0)
 	target := c.Args().Get(1)
+
 	o := &Options{}
-	o.Set(
-		verboseOption(c.Bool("verbose")),
-	)
+	o.Set()
 
 	return run(source, target, o)
 }
@@ -56,18 +47,11 @@ func main() {
 	}
 
 	app := &cli.App{
-		Version: version,
-		Name:    name,
-		Usage:   "This CLI compares files located in two directories and outputs the differences.",
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:    "verbose",
-				Aliases: []string{"v"},
-				Value:   false,
-				Usage:   "Output detailed log.",
-			},
-		},
-		Action: Run,
+		Version:   version,
+		Name:      name,
+		Usage:     "This CLI compares files located in two directories and outputs the differences.",
+		UsageText: "difff <source_path> <target_path>",
+		Action:    Run,
 	}
 
 	err := app.Run(os.Args)
