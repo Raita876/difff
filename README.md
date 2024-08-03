@@ -20,10 +20,10 @@ DOWNLOAD_ARCH=x86_64
 DOWNLOAD_VERSION=0.5.2
 curl -L \
   https://github.com/Raita876/difff/releases/download/${DOWNLOAD_VERSION}/difff_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz \
-  -o ./difff_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
-tar -xzf ./difff_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
-chmod 755 ./difff
-mv ./difff /usr/local/bin/
+  -o /tmp/difff_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
+tar -C /tmp -xzf /tmp/difff_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
+chmod 755 /tmp/difff
+mv /tmp/difff /usr/local/bin/
 ```
 
 ## Example
