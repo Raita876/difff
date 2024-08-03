@@ -22,7 +22,7 @@ help: build
 
 .PHONY: test
 test:
-	go test -v -cover -coverprofile=index.out ./...
+	go test -v -cover -coverprofile=index.out ./internal/...
 
 .PHONY: cover
 cover: test

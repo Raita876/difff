@@ -1,6 +1,7 @@
 package difff
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -184,6 +185,91 @@ func Test_countFiles(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("countFiles() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_run(t *testing.T) {
+	tempDir1 := t.TempDir()
+	tempFile1, err := os.CreateTemp(tempDir1, "temp")
+	if err != nil {
+		t.Fatal("failed create temp file.")
+	}
+	fileName1, err := filepath.Rel(tempDir1, tempFile1.Name())
+	if err != nil {
+		t.Fatal("failed get file name.")
+	}
+
+	tempDir2 := t.TempDir()
+	tempFile2, err := os.CreateTemp(tempDir2, "temp")
+	if err != nil {
+		t.Fatal("failed create temp file.")
+	}
+	fileName2, err := filepath.Rel(tempDir2, tempFile2.Name())
+	if err != nil {
+		t.Fatal("failed get file name.")
+	}
+
+	type args struct {
+		source string
+		target string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "run",
+			args: args{
+				source: tempDir1,
+				target: tempDir2,
+			},
+			want: fmt.Sprintf(`{
+  "source": {
+    "path": "%s",
+    "num": 1
+  },
+  "target": {
+    "path": "%s",
+    "num": 1
+  },
+  "diff": {
+    "source": {
+      "num": 1,
+      "results": [
+        {
+          "path": "%s",
+          "hash": "d41d8cd98f00b204e9800998ecf8427e"
+        }
+      ]
+    },
+    "target": {
+      "num": 1,
+      "results": [
+        {
+          "path": "%s",
+          "hash": "d41d8cd98f00b204e9800998ecf8427e"
+        }
+      ]
+    }
+  }
+}`, tempDir1, tempDir2, fileName1, fileName2,
+			),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := run(tt.args.source, tt.args.target)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("run() = %v, want %v", got, tt.want)
 			}
 		})
 	}

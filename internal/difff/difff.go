@@ -125,27 +125,27 @@ func countFiles(dir string) (uint64, error) {
 	return count, err
 }
 
-func Run(source, target string) error {
+func run(source, target string) (string, error) {
 	ri1, err := getResults(source)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	ri2, err := getResults(target)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	diff1, diff2 := lo.Difference(ri1.results, ri2.results)
 
 	count1, err := countFiles(source)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	count2, err := countFiles(target)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	di := DiffResponse{
@@ -171,10 +171,19 @@ func Run(source, target string) error {
 
 	b, err := json.MarshalIndent(di, "", "  ")
 	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
+}
+
+func Run(source, target string) error {
+	s, err := run(source, target)
+	if err != nil {
 		return err
 	}
 
-	fmt.Println(string(b))
+	fmt.Println(s)
 
 	return nil
 }
