@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"testing/iotest"
 )
 
 func Test_getResults(t *testing.T) {
@@ -86,6 +87,14 @@ func Test_getHash(t *testing.T) {
 			},
 			want:    "ed076287532e86365e841e92bfc50d8c",
 			wantErr: false,
+		},
+		{
+			name: "getHash error",
+			args: args{
+				r: iotest.ErrReader(fmt.Errorf("io error")),
+			},
+			want:    "",
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
