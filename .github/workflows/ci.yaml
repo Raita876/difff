@@ -16,13 +16,21 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.22
+          go-version-file: go.mod
+          cache: true
 
       - name: Install dependencies
         run: go mod download
 
-      - name: install
-        run: go install github.com/goreleaser/goreleaser/v2@latest
+      - name: Install goreleaser
+        run: |
+          DOWNLOAD_OS=Linux
+          DOWNLOAD_ARCH=x86_64
+          curl -L \
+            https://github.com/goreleaser/goreleaser/releases/download/v2.1.0/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz \
+            -o /tmp/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
+          tar -C /tmp -xzf /tmp/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
+          mv /tmp/goreleaser /usr/local/bin/
 
       - name: Run CI
         run: make ci
