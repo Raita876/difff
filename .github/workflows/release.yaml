@@ -11,16 +11,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Go
+      - name: set up Go
         uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
           cache: true
 
-      - name: Install goreleaser
+      - name: install goreleaser
         run: |
           DOWNLOAD_OS=Linux
           DOWNLOAD_ARCH=x86_64
@@ -31,7 +31,7 @@ jobs:
           tar -C /tmp -xzf /tmp/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
           mv /tmp/goreleaser /usr/local/bin/
 
-      - name: Release
+      - name: release
         run: make release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
