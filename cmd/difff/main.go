@@ -13,10 +13,18 @@ var (
 	name    string
 )
 
-type Options struct{}
+type Options struct {
+	Format difff.FormatType
+}
 
 type Option interface {
 	apply(*Options)
+}
+
+type formatOptions difff.FormatType
+
+func (fo formatOptions) apply(o *Options) {
+	o.Format = difff.FormatType(fo)
 }
 
 func (options *Options) Set(opts ...Option) {
@@ -26,7 +34,7 @@ func (options *Options) Set(opts ...Option) {
 }
 
 func run(source, target string, o *Options) error {
-	return difff.Run(source, target)
+	return difff.Run(source, target, o.Format)
 }
 
 func Run(c *cli.Context) error {
@@ -34,7 +42,9 @@ func Run(c *cli.Context) error {
 	target := c.Args().Get(1)
 
 	o := &Options{}
-	o.Set()
+	o.Set(
+		formatOptions(c.String("format")),
+	)
 
 	return run(source, target, o)
 }
@@ -51,7 +61,15 @@ func main() {
 		Name:      name,
 		Usage:     "This CLI compares files located in two directories and outputs the differences.",
 		UsageText: "difff <source_path> <target_path>",
-		Action:    Run,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "format",
+				Aliases: []string{"f"},
+				Value:   "JSON",
+				Usage:   "specify the output format. support: JSON, YAML, XML",
+			},
+		},
+		Action: Run,
 	}
 
 	err := app.Run(os.Args)

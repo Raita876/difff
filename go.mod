@@ -5,6 +5,7 @@ go 1.22.5
 require (
 	github.com/samber/lo v1.44.0
 	github.com/urfave/cli/v2 v2.27.2
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

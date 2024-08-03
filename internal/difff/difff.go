@@ -3,38 +3,40 @@ package difff
 import (
 	"crypto/md5"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/samber/lo"
+	"gopkg.in/yaml.v2"
 )
 
 type DiffResponse struct {
-	Source Dir  `json:"source"`
-	Target Dir  `json:"target"`
-	Diff   Diff `json:"diff"`
+	Source Dir  `json:"source" yaml:"source" xml:"source"`
+	Target Dir  `json:"target" yaml:"target" xml:"target"`
+	Diff   Diff `json:"diff" yaml:"diff" xml:"diff"`
 }
 
 type Dir struct {
-	Path string `json:"path"`
-	Num  uint64 `json:"num"`
+	Path string `json:"path" yaml:"path" xml:"path"`
+	Num  uint64 `json:"num" yaml:"num" xml:"num"`
 }
 
 type Diff struct {
-	Source DiffInfo `json:"source"`
-	Target DiffInfo `json:"target"`
+	Source DiffInfo `json:"source" yaml:"source" xml:"source"`
+	Target DiffInfo `json:"target" yaml:"target" xml:"target"`
 }
 
 type DiffInfo struct {
-	Num     uint64  `json:"num"`
-	Results Results `json:"results"`
+	Num     uint64   `json:"num" yaml:"num" xml:"num"`
+	Results []Result `json:"results" yaml:"results" xml:"results"`
 }
 
 type Result struct {
-	Path string `json:"path"`
-	Hash string `json:"hash"`
+	Path string `json:"path" yaml:"path" xml:"path"`
+	Hash string `json:"hash" yaml:"hash" xml:"hash"`
 }
 
 type Results []Result
@@ -43,6 +45,24 @@ type ResultsInfo struct {
 	root    string
 	results Results
 }
+
+type FormatType string
+
+const (
+	JSON FormatType = "JSON"
+	YAML FormatType = "YAML"
+	XML  FormatType = "XML"
+)
+
+// func (ft FormatType) String() string {
+// 	m := map[FormatType]string{
+// 		JSON: "JSON",
+// 		YAML: "YAML",
+// 		XML:  "XML",
+// 	}
+
+// 	return m[ft]
+// }
 
 func getResults(root string) (ResultsInfo, error) {
 	rs := Results{}
@@ -125,7 +145,20 @@ func countFiles(dir string) (uint64, error) {
 	return count, err
 }
 
-func run(source, target string) (string, error) {
+func marshal(dr *DiffResponse, ft FormatType) ([]byte, error) {
+	switch ft {
+	case JSON:
+		return json.MarshalIndent(*dr, "", "  ")
+	case YAML:
+		return yaml.Marshal(*dr)
+	case XML:
+		return xml.MarshalIndent(*dr, "", "  ")
+	}
+
+	return nil, fmt.Errorf("%s is unsupported format", ft)
+}
+
+func run(source, target string, ft FormatType) (string, error) {
 	ri1, err := getResults(source)
 	if err != nil {
 		return "", err
@@ -148,7 +181,7 @@ func run(source, target string) (string, error) {
 		return "", err
 	}
 
-	di := DiffResponse{
+	dr := DiffResponse{
 		Source: Dir{
 			Path: source,
 			Num:  count1,
@@ -169,7 +202,7 @@ func run(source, target string) (string, error) {
 		},
 	}
 
-	b, err := json.MarshalIndent(di, "", "  ")
+	b, err := marshal(&dr, ft)
 	if err != nil {
 		return "", err
 	}
@@ -177,8 +210,8 @@ func run(source, target string) (string, error) {
 	return string(b), nil
 }
 
-func Run(source, target string) error {
-	s, err := run(source, target)
+func Run(source, target string, ft FormatType) error {
+	s, err := run(source, target, ft)
 	if err != nil {
 		return err
 	}

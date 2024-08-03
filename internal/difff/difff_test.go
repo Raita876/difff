@@ -109,6 +109,7 @@ func TestRun(t *testing.T) {
 	type args struct {
 		source string
 		target string
+		ft     FormatType
 	}
 	tests := []struct {
 		name    string
@@ -120,6 +121,7 @@ func TestRun(t *testing.T) {
 			args: args{
 				source: tempDir1,
 				target: tempDir2,
+				ft:     JSON,
 			},
 			wantErr: false,
 		},
@@ -134,7 +136,7 @@ func TestRun(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Run(tt.args.source, tt.args.target); (err != nil) != tt.wantErr {
+			if err := Run(tt.args.source, tt.args.target, tt.args.ft); (err != nil) != tt.wantErr {
 				t.Errorf("Run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -214,6 +216,7 @@ func Test_run(t *testing.T) {
 	type args struct {
 		source string
 		target string
+		ft     FormatType
 	}
 	tests := []struct {
 		name    string
@@ -226,6 +229,7 @@ func Test_run(t *testing.T) {
 			args: args{
 				source: tempDir1,
 				target: tempDir2,
+				ft:     JSON,
 			},
 			want: fmt.Sprintf(`{
   "source": {
@@ -263,7 +267,7 @@ func Test_run(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := run(tt.args.source, tt.args.target)
+			got, err := run(tt.args.source, tt.args.target, tt.args.ft)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 				return
