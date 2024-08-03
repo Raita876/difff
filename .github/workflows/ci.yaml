@@ -26,11 +26,23 @@ jobs:
         run: |
           DOWNLOAD_OS=Linux
           DOWNLOAD_ARCH=x86_64
+          DOWNLOAD_VERSION=2.1.0
           curl -L \
-            https://github.com/goreleaser/goreleaser/releases/download/v2.1.0/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz \
+            https://github.com/goreleaser/goreleaser/releases/download/v${DOWNLOAD_VERSION}/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz \
             -o /tmp/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
           tar -C /tmp -xzf /tmp/goreleaser_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
           mv /tmp/goreleaser /usr/local/bin/
+
+      - name: Install golangci-lint
+        run: |
+          DOWNLOAD_OS=linux
+          DOWNLOAD_ARCH=amd64
+          DOWNLOAD_VERSION=1.59.0
+          curl -L \
+            https://github.com/golangci/golangci-lint/releases/download/v${DOWNLOAD_VERSION}/golangci-lint-${DOWNLOAD_VERSION}-${DOWNLOAD_OS}-${DOWNLOAD_ARCH}.tar.gz \
+            -o /tmp/golangci-lint-${DOWNLOAD_VERSION}-${DOWNLOAD_OS}-${DOWNLOAD_ARCH}.tar.gz
+          tar -C /tmp -xzf /tmp/golangci-lint-${DOWNLOAD_VERSION}-${DOWNLOAD_OS}-${DOWNLOAD_ARCH}.tar.gz
+          mv /tmp/golangci-lint-${DOWNLOAD_VERSION}-${DOWNLOAD_OS}-${DOWNLOAD_ARCH}/golangci-lint /usr/local/bin/
 
       - name: Run CI
         run: make ci
