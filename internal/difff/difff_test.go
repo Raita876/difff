@@ -264,6 +264,70 @@ func Test_run(t *testing.T) {
 			),
 			wantErr: false,
 		},
+		{
+			name: "run",
+			args: args{
+				source: tempDir1,
+				target: tempDir2,
+				ft:     YAML,
+			},
+			want: fmt.Sprintf(`source:
+  path: %s
+  num: 1
+target:
+  path: %s
+  num: 1
+diff:
+  source:
+    num: 1
+    results:
+    - path: %s
+      hash: d41d8cd98f00b204e9800998ecf8427e
+  target:
+    num: 1
+    results:
+    - path: %s
+      hash: d41d8cd98f00b204e9800998ecf8427e
+`, tempDir1, tempDir2, fileName1, fileName2,
+			),
+			wantErr: false,
+		},
+		{
+			name: "run",
+			args: args{
+				source: tempDir1,
+				target: tempDir2,
+				ft:     XML,
+			},
+			want: fmt.Sprintf(`<DiffResponse>
+  <source>
+    <path>%s</path>
+    <num>1</num>
+  </source>
+  <target>
+    <path>%s</path>
+    <num>1</num>
+  </target>
+  <diff>
+    <source>
+      <num>1</num>
+      <results>
+        <path>%s</path>
+        <hash>d41d8cd98f00b204e9800998ecf8427e</hash>
+      </results>
+    </source>
+    <target>
+      <num>1</num>
+      <results>
+        <path>%s</path>
+        <hash>d41d8cd98f00b204e9800998ecf8427e</hash>
+      </results>
+    </target>
+  </diff>
+</DiffResponse>`, tempDir1, tempDir2, fileName1, fileName2,
+			),
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
