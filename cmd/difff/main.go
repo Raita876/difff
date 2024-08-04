@@ -14,7 +14,8 @@ var (
 )
 
 type Options struct {
-	Format difff.FormatType
+	Format          difff.FormatType
+	ExcludePatterns []string
 }
 
 type Option interface {
@@ -27,6 +28,12 @@ func (fo formatOptions) apply(o *Options) {
 	o.Format = difff.FormatType(fo)
 }
 
+type excludePatternsOptions []string
+
+func (epo excludePatternsOptions) apply(o *Options) {
+	o.ExcludePatterns = []string(epo)
+}
+
 func (options *Options) Set(opts ...Option) {
 	for _, o := range opts {
 		o.apply(options)
@@ -34,8 +41,7 @@ func (options *Options) Set(opts ...Option) {
 }
 
 func run(source, target string, o *Options) error {
-	// TODO: オプションから excludePatterns を取得する
-	return difff.Run(source, target, o.Format, []string{})
+	return difff.Run(source, target, o.Format, o.ExcludePatterns)
 }
 
 func Run(c *cli.Context) error {
@@ -45,6 +51,7 @@ func Run(c *cli.Context) error {
 	o := &Options{}
 	o.Set(
 		formatOptions(c.String("format")),
+		excludePatternsOptions(c.StringSlice("exclude")),
 	)
 
 	return run(source, target, o)
@@ -68,6 +75,11 @@ func main() {
 				Aliases: []string{"f"},
 				Value:   "JSON",
 				Usage:   "specify the output format. support: JSON, YAML, XML",
+			},
+			&cli.StringSliceFlag{
+				Name:    "exclude",
+				Aliases: []string{"e"},
+				Usage:   "specify files to exclude from the comparison using regular expressions.",
 			},
 		},
 		Action: Run,
