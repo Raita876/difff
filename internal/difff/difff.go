@@ -15,9 +15,10 @@ import (
 )
 
 type DiffResponse struct {
-	Source Dir  `json:"source" yaml:"source" xml:"source"`
-	Target Dir  `json:"target" yaml:"target" xml:"target"`
-	Diff   Diff `json:"diff" yaml:"diff" xml:"diff"`
+	Source  Dir      `json:"source" yaml:"source" xml:"source"`
+	Target  Dir      `json:"target" yaml:"target" xml:"target"`
+	Exclude []string `json:"exclude" yaml:"exclude" xml:"exclude"`
+	Diff    Diff     `json:"diff" yaml:"diff" xml:"diff"`
 }
 
 type Dir struct {
@@ -192,6 +193,7 @@ func run(source, target string, ft FormatType, excludePatterns []string) (string
 			Path: target,
 			Num:  count2,
 		},
+		Exclude: excludePatterns,
 		Diff: Diff{
 			Source: DiffInfo{
 				Num:     uint64(len(diff1)),

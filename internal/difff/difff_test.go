@@ -299,6 +299,7 @@ func Test_run(t *testing.T) {
     "path": "%s",
     "num": 1
   },
+  "exclude": [],
   "diff": {
     "source": {
       "num": 1,
@@ -337,6 +338,7 @@ func Test_run(t *testing.T) {
 target:
   path: %s
   num: 1
+exclude: []
 diff:
   source:
     num: 1
@@ -427,6 +429,7 @@ func Test_marshal(t *testing.T) {
 						Path: "target_path",
 						Num:  1,
 					},
+					Exclude: []string{},
 					Diff: Diff{
 						Source: DiffInfo{
 							Num:     0,
@@ -449,6 +452,7 @@ func Test_marshal(t *testing.T) {
     "path": "target_path",
     "num": 1
   },
+  "exclude": [],
   "diff": {
     "source": {
       "num": 0,

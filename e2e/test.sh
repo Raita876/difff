@@ -22,6 +22,7 @@ WANT_JSON=$(
     "path": "${TARGET_DIR_PATH}",
     "num": 6
   },
+  "exclude": [],
   "diff": {
     "source": {
       "num": 2,
@@ -63,6 +64,7 @@ source:
 target:
   path: ${TARGET_DIR_PATH}
   num: 6
+exclude: []
 diff:
   source:
     num: 2
@@ -133,6 +135,10 @@ WANT_JSON_WITH_EXCLUDE_OPTION=$(
     "path": "${TARGET_DIR_PATH}",
     "num": 6
   },
+  "exclude": [
+    "^.*g\\\\.txt$",
+    "^.*i\\\\.txt$"
+  ],
   "diff": {
     "source": {
       "num": 0,

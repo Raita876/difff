@@ -31,7 +31,12 @@ func (fo formatOptions) apply(o *Options) {
 type excludePatternsOptions []string
 
 func (epo excludePatternsOptions) apply(o *Options) {
-	o.ExcludePatterns = []string(epo)
+	ss := []string(epo)
+	if ss == nil {
+		o.ExcludePatterns = []string{}
+	} else {
+		o.ExcludePatterns = ss
+	}
 }
 
 func (options *Options) Set(opts ...Option) {
