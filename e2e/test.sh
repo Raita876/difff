@@ -22,6 +22,7 @@ WANT_JSON=$(
     "path": "${TARGET_DIR_PATH}",
     "num": 6
   },
+  "exclude": [],
   "diff": {
     "source": {
       "num": 2,
@@ -63,6 +64,7 @@ source:
 target:
   path: ${TARGET_DIR_PATH}
   num: 6
+exclude: []
 diff:
   source:
     num: 2
@@ -122,6 +124,41 @@ EOS
 )
 readonly WANT_XML
 
+WANT_JSON_WITH_EXCLUDE_OPTION=$(
+  cat <<EOS
+{
+  "source": {
+    "path": "${SOURCE_DIR_PATH}",
+    "num": 4
+  },
+  "target": {
+    "path": "${TARGET_DIR_PATH}",
+    "num": 5
+  },
+  "exclude": [
+    "^.*g\\\\.txt$",
+    "^.*i\\\\.txt$"
+  ],
+  "diff": {
+    "source": {
+      "num": 0,
+      "results": []
+    },
+    "target": {
+      "num": 1,
+      "results": [
+        {
+          "path": "e/f/j.txt",
+          "hash": "f6c79025f3b5bedac7cd769f0847e36a"
+        }
+      ]
+    }
+  }
+}
+EOS
+)
+readonly WANT_JSON_WITH_EXCLUDE_OPTION
+
 function main() {
   local result_json
   result_json=$(
@@ -155,6 +192,19 @@ function main() {
   diff -u \
     <(echo "${result_xml}") \
     <(echo "${WANT_XML}")
+
+  local result_json_with_exclude_option
+  result_json_with_exclude_option=$(
+    ${BIN_PATH} --format JSON \
+      --exclude "^.*g\.txt$" \
+      --exclude "^.*i\.txt$" \
+      "${SOURCE_DIR_PATH}" \
+      "${TARGET_DIR_PATH}"
+  )
+
+  diff -u \
+    <(echo "${result_json_with_exclude_option}") \
+    <(echo "${WANT_JSON_WITH_EXCLUDE_OPTION}")
 
 }
 

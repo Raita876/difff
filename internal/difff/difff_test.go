@@ -23,7 +23,8 @@ func Test_getResults(t *testing.T) {
 	}
 
 	type args struct {
-		root string
+		root            string
+		excludePatterns []string
 	}
 	tests := []struct {
 		name    string
@@ -34,7 +35,8 @@ func Test_getResults(t *testing.T) {
 		{
 			name: "getResults",
 			args: args{
-				root: tempDir,
+				root:            tempDir,
+				excludePatterns: []string{},
 			},
 			want: ResultsInfo{
 				root: tempDir,
@@ -50,7 +52,29 @@ func Test_getResults(t *testing.T) {
 		{
 			name: "getResults error",
 			args: args{
-				root: "non existent directory",
+				root:            "non existent directory",
+				excludePatterns: []string{},
+			},
+			want:    ResultsInfo{},
+			wantErr: true,
+		},
+		{
+			name: "getResults with excludePatterns",
+			args: args{
+				root:            tempDir,
+				excludePatterns: []string{"^.*temp.*$"},
+			},
+			want: ResultsInfo{
+				root:    tempDir,
+				results: Results{},
+			},
+			wantErr: false,
+		},
+		{
+			name: "getResults error with excludePatterns",
+			args: args{
+				root:            tempDir,
+				excludePatterns: []string{"hoge(fuga"}, // This is not a valid regular expression.
 			},
 			want:    ResultsInfo{},
 			wantErr: true,
@@ -58,7 +82,7 @@ func Test_getResults(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getResults(tt.args.root)
+			got, err := getResults(tt.args.root, tt.args.excludePatterns)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getResults() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -116,9 +140,10 @@ func TestRun(t *testing.T) {
 	tempDir2 := t.TempDir()
 
 	type args struct {
-		source string
-		target string
-		ft     FormatType
+		source          string
+		target          string
+		ft              FormatType
+		excludePatterns []string
 	}
 	tests := []struct {
 		name    string
@@ -128,43 +153,47 @@ func TestRun(t *testing.T) {
 		{
 			name: "Run",
 			args: args{
-				source: tempDir1,
-				target: tempDir2,
-				ft:     JSON,
+				source:          tempDir1,
+				target:          tempDir2,
+				ft:              JSON,
+				excludePatterns: []string{},
 			},
 			wantErr: false,
 		},
 		{
 			name: "Run error (source is non existent directory)",
 			args: args{
-				source: "non existent directory",
-				target: tempDir2,
-				ft:     JSON,
+				source:          "non existent directory",
+				target:          tempDir2,
+				ft:              JSON,
+				excludePatterns: []string{},
 			},
 			wantErr: true,
 		},
 		{
 			name: "Run error (target is non existent directory)",
 			args: args{
-				source: tempDir1,
-				target: "non existent directory",
-				ft:     JSON,
+				source:          tempDir1,
+				target:          "non existent directory",
+				ft:              JSON,
+				excludePatterns: []string{},
 			},
 			wantErr: true,
 		},
 		{
 			name: "Run error (UNKNOWN format)",
 			args: args{
-				source: tempDir1,
-				target: tempDir2,
-				ft:     "UNKNOWN",
+				source:          tempDir1,
+				target:          tempDir2,
+				ft:              "UNKNOWN",
+				excludePatterns: []string{},
 			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Run(tt.args.source, tt.args.target, tt.args.ft); (err != nil) != tt.wantErr {
+			if err := Run(tt.args.source, tt.args.target, tt.args.ft, tt.args.excludePatterns); (err != nil) != tt.wantErr {
 				t.Errorf("Run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -181,7 +210,8 @@ func Test_countFiles(t *testing.T) {
 	}
 
 	type args struct {
-		dir string
+		dir             string
+		excludePatterns []string
 	}
 	tests := []struct {
 		name    string
@@ -192,7 +222,8 @@ func Test_countFiles(t *testing.T) {
 		{
 			name: "countFiles",
 			args: args{
-				dir: tempDir,
+				dir:             tempDir,
+				excludePatterns: []string{},
 			},
 			want:    3,
 			wantErr: false,
@@ -200,7 +231,30 @@ func Test_countFiles(t *testing.T) {
 		{
 			name: "countFiles",
 			args: args{
-				dir: "non existent directory",
+				dir:             "non existent directory",
+				excludePatterns: []string{},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "countFiles with excludePatterns",
+			args: args{
+				dir: tempDir,
+				excludePatterns: []string{
+					"^.*temp.*$",
+				},
+			},
+			want:    0,
+			wantErr: false,
+		},
+		{
+			name: "countFiles error with excludePatterns",
+			args: args{
+				dir: tempDir,
+				excludePatterns: []string{
+					"hoge(fuga", // This is not a valid regular expression.
+				},
 			},
 			want:    0,
 			wantErr: true,
@@ -208,7 +262,7 @@ func Test_countFiles(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := countFiles(tt.args.dir)
+			got, err := countFiles(tt.args.dir, tt.args.excludePatterns)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("countFiles() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -242,9 +296,10 @@ func Test_run(t *testing.T) {
 	}
 
 	type args struct {
-		source string
-		target string
-		ft     FormatType
+		source          string
+		target          string
+		ft              FormatType
+		excludePatterns []string
 	}
 	tests := []struct {
 		name    string
@@ -255,9 +310,10 @@ func Test_run(t *testing.T) {
 		{
 			name: "run",
 			args: args{
-				source: tempDir1,
-				target: tempDir2,
-				ft:     JSON,
+				source:          tempDir1,
+				target:          tempDir2,
+				ft:              JSON,
+				excludePatterns: []string{},
 			},
 			want: fmt.Sprintf(`{
   "source": {
@@ -268,6 +324,7 @@ func Test_run(t *testing.T) {
     "path": "%s",
     "num": 1
   },
+  "exclude": [],
   "diff": {
     "source": {
       "num": 1,
@@ -295,9 +352,10 @@ func Test_run(t *testing.T) {
 		{
 			name: "run",
 			args: args{
-				source: tempDir1,
-				target: tempDir2,
-				ft:     YAML,
+				source:          tempDir1,
+				target:          tempDir2,
+				ft:              YAML,
+				excludePatterns: []string{},
 			},
 			want: fmt.Sprintf(`source:
   path: %s
@@ -305,6 +363,7 @@ func Test_run(t *testing.T) {
 target:
   path: %s
   num: 1
+exclude: []
 diff:
   source:
     num: 1
@@ -323,9 +382,10 @@ diff:
 		{
 			name: "run",
 			args: args{
-				source: tempDir1,
-				target: tempDir2,
-				ft:     XML,
+				source:          tempDir1,
+				target:          tempDir2,
+				ft:              XML,
+				excludePatterns: []string{},
 			},
 			want: fmt.Sprintf(`<DiffResponse>
   <source>
@@ -359,7 +419,7 @@ diff:
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := run(tt.args.source, tt.args.target, tt.args.ft)
+			got, err := run(tt.args.source, tt.args.target, tt.args.ft, tt.args.excludePatterns)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -394,6 +454,7 @@ func Test_marshal(t *testing.T) {
 						Path: "target_path",
 						Num:  1,
 					},
+					Exclude: []string{},
 					Diff: Diff{
 						Source: DiffInfo{
 							Num:     0,
@@ -416,6 +477,7 @@ func Test_marshal(t *testing.T) {
     "path": "target_path",
     "num": 1
   },
+  "exclude": [],
   "diff": {
     "source": {
       "num": 0,
