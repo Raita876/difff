@@ -17,7 +17,7 @@ Check [difff/releases](https://github.com/Raita876/difff/releases) for the lates
 ```bash
 DOWNLOAD_OS=Linux
 DOWNLOAD_ARCH=x86_64
-DOWNLOAD_VERSION=0.5.2
+DOWNLOAD_VERSION=0.6.0
 curl -L \
   https://github.com/Raita876/difff/releases/download/${DOWNLOAD_VERSION}/difff_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz \
   -o /tmp/difff_${DOWNLOAD_OS}_${DOWNLOAD_ARCH}.tar.gz
