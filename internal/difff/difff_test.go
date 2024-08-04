@@ -210,7 +210,8 @@ func Test_countFiles(t *testing.T) {
 	}
 
 	type args struct {
-		dir string
+		dir             string
+		excludePatterns []string
 	}
 	tests := []struct {
 		name    string
@@ -221,7 +222,8 @@ func Test_countFiles(t *testing.T) {
 		{
 			name: "countFiles",
 			args: args{
-				dir: tempDir,
+				dir:             tempDir,
+				excludePatterns: []string{},
 			},
 			want:    3,
 			wantErr: false,
@@ -229,7 +231,30 @@ func Test_countFiles(t *testing.T) {
 		{
 			name: "countFiles",
 			args: args{
-				dir: "non existent directory",
+				dir:             "non existent directory",
+				excludePatterns: []string{},
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "countFiles with excludePatterns",
+			args: args{
+				dir: tempDir,
+				excludePatterns: []string{
+					"^.*temp.*$",
+				},
+			},
+			want:    0,
+			wantErr: false,
+		},
+		{
+			name: "countFiles error with excludePatterns",
+			args: args{
+				dir: tempDir,
+				excludePatterns: []string{
+					"hoge(fuga", // This is not a valid regular expression.
+				},
 			},
 			want:    0,
 			wantErr: true,
@@ -237,7 +262,7 @@ func Test_countFiles(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := countFiles(tt.args.dir)
+			got, err := countFiles(tt.args.dir, tt.args.excludePatterns)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("countFiles() error = %v, wantErr %v", err, tt.wantErr)
 				return

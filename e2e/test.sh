@@ -129,11 +129,11 @@ WANT_JSON_WITH_EXCLUDE_OPTION=$(
 {
   "source": {
     "path": "${SOURCE_DIR_PATH}",
-    "num": 6
+    "num": 4
   },
   "target": {
     "path": "${TARGET_DIR_PATH}",
-    "num": 6
+    "num": 5
   },
   "exclude": [
     "^.*g\\\\.txt$",

@@ -130,12 +130,23 @@ func getHash(r io.Reader) (string, error) {
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }
 
-func countFiles(dir string) (uint64, error) {
+func countFiles(dir string, excludePatterns []string) (uint64, error) {
 	var count uint64 = 0
 
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+
+		for _, pattern := range excludePatterns {
+			matched, err := regexp.MatchString(pattern, path)
+			if err != nil {
+				return err
+			}
+
+			if matched {
+				return nil
+			}
 		}
 
 		if !d.IsDir() {
@@ -174,12 +185,12 @@ func run(source, target string, ft FormatType, excludePatterns []string) (string
 
 	diff1, diff2 := lo.Difference(ri1.results, ri2.results)
 
-	count1, err := countFiles(source)
+	count1, err := countFiles(source, excludePatterns)
 	if err != nil {
 		return "", err
 	}
 
-	count2, err := countFiles(target)
+	count2, err := countFiles(target, excludePatterns)
 	if err != nil {
 		return "", err
 	}
