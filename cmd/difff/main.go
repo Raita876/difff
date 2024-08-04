@@ -34,7 +34,8 @@ func (options *Options) Set(opts ...Option) {
 }
 
 func run(source, target string, o *Options) error {
-	return difff.Run(source, target, o.Format)
+	// TODO: オプションから excludePatterns を取得する
+	return difff.Run(source, target, o.Format, []string{})
 }
 
 func Run(c *cli.Context) error {

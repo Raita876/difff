@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/samber/lo"
 	"gopkg.in/yaml.v2"
@@ -54,7 +55,7 @@ const (
 	XML  FormatType = "XML"
 )
 
-func getResults(root string) (ResultsInfo, error) {
+func getResults(root string, excludePatterns []string) (ResultsInfo, error) {
 	rs := Results{}
 	cd, err := os.Getwd()
 	if err != nil {
@@ -72,6 +73,17 @@ func getResults(root string) (ResultsInfo, error) {
 	err = filepath.WalkDir(".", func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+
+		for _, pattern := range excludePatterns {
+			matched, err := regexp.MatchString(pattern, path)
+			if err != nil {
+				return err
+			}
+
+			if matched {
+				return nil
+			}
 		}
 
 		if d.IsDir() {
@@ -148,13 +160,13 @@ func marshal(dr *DiffResponse, ft FormatType) ([]byte, error) {
 	return nil, fmt.Errorf("%s is unsupported format", ft)
 }
 
-func run(source, target string, ft FormatType) (string, error) {
-	ri1, err := getResults(source)
+func run(source, target string, ft FormatType, excludePatterns []string) (string, error) {
+	ri1, err := getResults(source, excludePatterns)
 	if err != nil {
 		return "", err
 	}
 
-	ri2, err := getResults(target)
+	ri2, err := getResults(target, excludePatterns)
 	if err != nil {
 		return "", err
 	}
@@ -200,8 +212,8 @@ func run(source, target string, ft FormatType) (string, error) {
 	return string(b), nil
 }
 
-func Run(source, target string, ft FormatType) error {
-	s, err := run(source, target, ft)
+func Run(source, target string, ft FormatType, excludePatterns []string) error {
+	s, err := run(source, target, ft, excludePatterns)
 	if err != nil {
 		return err
 	}
