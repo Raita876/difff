@@ -60,7 +60,7 @@ func main() {
 		Version:   version,
 		Name:      name,
 		Usage:     "This CLI compares files located in two directories and outputs the differences.",
-		UsageText: "difff <source_path> <target_path>",
+		UsageText: "difff <source_dir_path> <target_dir_path>",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "format",
