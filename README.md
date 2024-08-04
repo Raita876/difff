@@ -1,3 +1,7 @@
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Raita876/difff)
+![Go Version](https://img.shields.io/github/go-mod/go-version/Raita876/difff)
+![GitHub Actions Status](https://github.com/Raita876/difff/actions/workflows/ci.yaml/badge.svg?branch=main)
+
 # Difff
 
 This CLI compares files located in two directories and outputs the differences.
